@@ -1,13 +1,12 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import LoginPage from './pages/LoginPage'; // Asegúrate de que esta línea solo aparezca una vez
+import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import { AuthProvider } from './context/AutenticacioContex';
-import TareasPage from './pages/TasksPage';
 import TaskFormPage from './pages/TaskFormPage';
 import PerfilPage from './pages/PerfilPage';
-import HomePage from './pages/HomePage'; // Verifica que no haya duplicados aquí
+import HomePage from './pages/HomePage';
 import ProtectedRoute from './ProtectedRoute';
-import { TaskProvider } from './context/TaskContext';
+import TasksPage from './pages/TasksPage'; // Asegúrate de importar TasksPage
 
 function App() {
   return (
@@ -24,7 +23,7 @@ function App() {
           <Route path="/registro" element={<RegisterPage />} />
 
           <Route element={<ProtectedRoute />}>
-            <Route path="/tasks" element={<TareasPage />} />
+            <Route path="/tasks" element={<TasksPage />} />
             <Route path="/agregar-task" element={<TaskFormPage />} />
             <Route path="/tasks/:id" element={<TaskFormPage />} />
             <Route path="/perfil" element={<PerfilPage />} />

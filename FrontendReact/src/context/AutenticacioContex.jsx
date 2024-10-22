@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState } from "react";
+/*import { createContext, useContext, useEffect, useState } from "react";
 import { registerRequest, verifyTokenRequest, loginRequest } from "../api/auth";
 import Cookies from "js-cookie";
 
@@ -105,6 +105,126 @@ export const AuthProvider = ({ children }) => {
         <AuthContext.Provider value={{
             signup,
             signin,
+            user,
+            isAuthenticated,
+            errors,
+            loading,
+        }}>
+            {children}
+        </AuthContext.Provider>
+    );
+};
+*/
+
+import { createContext, useContext, useEffect, useState } from "react";
+import { registerRequest, verifyTokenRequest, loginRequest } from "../api/auth";
+import Cookies from "js-cookie";
+
+export const AuthContext = createContext();
+
+export const useAuth = () => {
+    const context = useContext(AuthContext);
+    if (!context) {
+        throw new Error("useAuth debe ser usado dentro de un AuthProvider");
+    }
+    return context;
+};
+
+export const AuthProvider = ({ children }) => {
+    const [user, setUser ] = useState(null);
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const [errors, setErrors] = useState([]);
+    const [loading, setLoading] = useState(true);
+
+    // Registro
+    const signup = async (user) => {
+        try {
+            const res = await registerRequest(user);
+            if (res.status === 200) {
+                setUser (res.data);
+                setIsAuthenticated(true);
+            }
+        } catch (error) {
+            handleError(error);
+        }
+    };
+
+    // Inicio de sesión
+    const signin = async (user) => {
+        try {
+            const res = await loginRequest(user);
+            setUser (res.data);
+            setIsAuthenticated(true);
+        } catch (error) {
+            handleError(error);
+        }
+    };
+
+    // Cierre de sesión
+    const logout = () => {
+        Cookies.remove("token");
+        setUser (null);
+        setIsAuthenticated(false);
+    };
+
+    // Manejo de errores
+    const handleError = (error) => {
+        if (error.response) {
+            if (Array.isArray(error.response.data)) {
+                setErrors(error.response.data);
+            } else {
+                setErrors([error.response.data.message]);
+            }
+        } else {
+            setErrors(["Error en la conexión. Por favor, inténtalo de nuevo."]);
+        }
+    };
+
+    // Limpiar mensajes de error después de 5 segundos
+    useEffect(() => {
+        if (errors.length > 0) {
+            const timer = setTimeout(() => {
+                setErrors([]);
+            }, 5000);
+            return () => clearTimeout(timer);
+        }
+    }, [errors]);
+
+    // Verificar el estado de autenticación al cargar
+    useEffect(() => {
+        const checkLogin = async () => {
+            const cookies = Cookies.get();
+            if (!cookies.token) {
+                setIsAuthenticated(false);
+                setLoading(false);
+                return;
+            }
+
+            try {
+                const res = await verifyTokenRequest(cookies.token);
+                if (!res.data) {
+                    setIsAuthenticated(false);
+                    setUser (null);
+                } else {
+                    setIsAuthenticated(true);
+                    setUser (res.data);
+                }
+            } catch (error) {
+                setIsAuthenticated(false);
+                setUser (null);
+            } finally {
+                setLoading(false); // Asegurarse de que loading se actualice al final
+            }
+        };
+
+        checkLogin();
+    }, []);
+
+    return (
+        <AuthContext.Provider value={{
+            signup,
+            signin,
+            logout,
             user,
             isAuthenticated,
             errors,

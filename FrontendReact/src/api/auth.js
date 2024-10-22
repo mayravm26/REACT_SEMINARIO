@@ -7,4 +7,5 @@ export const loginRequest = (user) => axios.post(`/login`, user);
 export const verifyTokenRequest = async () => axios.get(`/auth/verify`);
 
 
+
 //peticiones del backend

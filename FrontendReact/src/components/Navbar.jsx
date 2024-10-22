@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
-import { useAuth } from "../context/authContext";
-import { ButtonLink } from "./ui/ButtonLink";
+import { useAuth } from "../context/AutenticacioContex";
+import { ButtonLink } from "./TaskCard";
 
 export function Navbar() {
   const { isAuthenticated, logout, user } = useAuth();
@@ -15,7 +15,7 @@ export function Navbar() {
         {isAuthenticated ? (
           <>
             <li>
-              Welcome {user.username}
+              Bienvenido {user.username}
             </li>
             <li>
               <ButtonLink to="/add-task">Add Task</ButtonLink>

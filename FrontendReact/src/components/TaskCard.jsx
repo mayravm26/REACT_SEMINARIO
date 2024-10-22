@@ -1,5 +1,4 @@
-import { useTasks } from "../../context/TaskContext";
-import { Button, ButtonLink, Card } from "../Navbar";
+import { useTasks } from "../context/TaskContext.jsx";
 
 export function TaskCard({ task }) {
   const { deleteTask } = useTasks();
